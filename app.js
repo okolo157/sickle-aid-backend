@@ -8,6 +8,8 @@ const testRoute = require("./routes/testMw");
 dotenv.config();
 connectDB();
 
+const app = express();
+
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -16,7 +18,6 @@ app.use(
   })
 );
 
-const app = express();
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", testRoute);
