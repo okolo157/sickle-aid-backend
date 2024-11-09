@@ -78,30 +78,36 @@ exports.signup = [
   },
 ];
 
-
 // Sign-in Controller with input validation
 exports.signin = [
-  // Validate input data
   body("email").isEmail().withMessage("Enter a valid email address"),
   body("password").not().isEmpty().withMessage("Password is required"),
 
   async (req, res) => {
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is not defined in environment variables");
+      return res.status(500).json({ message: "Server configuration error" });
+    }
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body;
+
     try {
       const user = await User.findOne({ email });
-      if (!user) {
-        return res.status(401).json({
-          message: "No account found with this email",
-        });
-      }
+      if (!user)
+        return res.status(400).json({ message: "Invalid email or password" });
 
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        return res.status(401).json({
-          message: "Incorrect password",
-        });
-      }
+      if (!isMatch)
+        return res.status(400).json({ message: "Invalid email or password" });
 
-      // Add user info to the response (optional)
+      //verify JWT_SECRET exists
+      console.log("JWT_SECRET exists:", !!process.env.JWT_SECRET);
+
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "1h",
       });
@@ -111,15 +117,13 @@ exports.signin = [
         token,
         user: {
           id: user._id,
-          username: user.username,
           email: user.email,
+          username: user.username,
         },
       });
     } catch (error) {
       console.error("Signin error:", error);
-      res.status(500).json({
-        message: "An error occurred during sign in",
-      });
+      res.status(500).json({ error: error.message });
     }
   },
 ];
