@@ -12,10 +12,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://refactored-train-p9jwpq5j7vw29xrx-8081.app.github.dev/",
-    ],
+    origin: "*",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
