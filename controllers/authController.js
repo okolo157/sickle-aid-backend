@@ -7,13 +7,6 @@ const { body, validationResult } = require("express-validator");
 exports.signup = [
   // Validate input data
   body("email").isEmail().withMessage("Enter a valid email address"),
-  body("username")
-    .not()
-    .isEmpty()
-    .withMessage("Username is required")
-    .trim()
-    .isLength({ min: 3 })
-    .withMessage("Username must be at least 3 characters long"),
   body("password")
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters long")
@@ -23,6 +16,16 @@ exports.signup = [
     .withMessage("Password must contain at least one lowercase letter")
     .matches(/[A-Z]/)
     .withMessage("Password must contain at least one uppercase letter"),
+  body("confirmPassword")
+    .not()
+    .isEmpty()
+    .withMessage("Confirm password is required")
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error("Passwords do not match");
+      }
+      return true;
+    }),
 
   async (req, res) => {
     try {
@@ -32,7 +35,7 @@ exports.signup = [
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { username, email, password } = req.body;
+      const { email, password } = req.body;
 
       // Check if email already exists
       const emailExists = await User.findOne({ email: email.toLowerCase() });
@@ -42,22 +45,11 @@ exports.signup = [
         });
       }
 
-      // Check if username already exists
-      const usernameExists = await User.findOne({
-        username: { $regex: new RegExp(`^${username}$`, "i") },
-      });
-      if (usernameExists) {
-        return res.status(400).json({
-          message: "This username is already taken",
-        });
-      }
-
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 12); // Using 12 rounds for better security
 
       // Create new user
       const newUser = new User({
-        username,
         email: email.toLowerCase(), // Store email in lowercase
         password: hashedPassword,
         createdAt: new Date(),
