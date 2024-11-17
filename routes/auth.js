@@ -8,4 +8,7 @@ router.post("/signup", signup);
 // Sign-in route
 router.post("/signin", signin);
 
+//google sign-in
+router.post("/google/signin", google);
+
 module.exports = router;

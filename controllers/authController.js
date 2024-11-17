@@ -119,3 +119,29 @@ exports.signin = [
     }
   },
 ];
+
+app.post("/signin/google", async (req, res) => {
+  const { email, name } = req.body;
+
+  try {
+    // Check if user exists in the database
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // If user doesn't exist, create a new user
+      user = new User({ email, name });
+      await user.save();
+    }
+
+    // Create JWT token (for session management)
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    // Send back the token to the client
+    res.json({ message: "User authenticated successfully", token });
+  } catch (error) {
+    console.error("Error handling Google sign-in:", error);
+    res.status(500).json({ message: "Server error. Please try again later." });
+  }
+});
