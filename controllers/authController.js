@@ -4,9 +4,8 @@ const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const { OAuth2Client } = require("google-auth-library");
 
-// Sign-up Controller with input validation
 exports.signup = [
-  // Validate input data
+  // Validation for email and password
   body("email").isEmail().withMessage("Enter a valid email address"),
   body("password")
     .isLength({ min: 6 })
@@ -30,7 +29,7 @@ exports.signup = [
 
   async (req, res) => {
     try {
-      // Check for validation errors
+      // Validate input
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -47,13 +46,12 @@ exports.signup = [
       }
 
       // Hash password
-      const hashedPassword = await bcrypt.hash(password, 12); // Using 12 rounds for better security
+      const hashedPassword = await bcrypt.hash(password, 12);
 
-      // Create new user
+      // Create the user without profile data
       const newUser = new User({
-        email: email.toLowerCase(), // Store email in lowercase
+        email: email.toLowerCase(),
         password: hashedPassword,
-        createdAt: new Date(),
       });
 
       await newUser.save();

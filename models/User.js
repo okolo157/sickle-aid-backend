@@ -1,23 +1,70 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema(
-  {
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    username: { type: String, required: true },
-    profileImage: { type: String },
-    gender: { type: String },
-    phoneNumber: { type: String },
-    dateOfBirth: { type: Date },
-    bloodGroup: { type: String },
-    allergies: { type: String },
-    medication: { type: String },
-    HMO: { type: String },
-    emergencyContact: { type: String },
-    relation: { type: String },
-    isProfileComplete: { type: Boolean, default: false },
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true, // Email must be unique
   },
-  { timestamps: true }
-);
+  password: {
+    type: String,
+    required: true,
+  },
+  username: {
+    type: String,
+    required: false, // This can be added during the profile update
+  },
+  phoneNumber: {
+    type: String,
+    required: false,
+  },
+  dateOfBirth: {
+    type: Date,
+    required: false,
+  },
+  bloodGroup: {
+    type: String,
+    required: false,
+  },
+  allergies: {
+    type: String,
+    required: false,
+  },
+  medication: {
+    type: String,
+    required: false,
+  },
+  HMO: {
+    type: String,
+    required: false,
+  },
+  emergencyContact: {
+    type: String,
+    required: false,
+  },
+  profileImage: {
+    type: String,
+    required: false,
+  },
+  gender: {
+    type: String,
+    // enum: ["male", "female", "other"], // For gender
+    required: false,
+  },
+  isProfileComplete: {
+    type: Boolean,
+    default: false,
+  },
+  relation: {
+    type: String,
+    required: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-module.exports = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
