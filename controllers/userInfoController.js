@@ -12,7 +12,6 @@ exports.updatedUser = [
     .optional()
     .isMobilePhone()
     .withMessage("Invalid phone number"),
-  body("dateOfBirth").optional().isDate().withMessage("Invalid date of birth"),
   body("bloodGroup").optional().isString().withMessage("Invalid blood group"),
   body("allergies")
     .optional()
