@@ -1,9 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const { body, validationResult } = require("express-validator");
-const HospitalInfo = require("../models/HospitalInfo"); // Import the HospitalInfo model
-const User = require("../models/User"); // Import the User model
-const nodemailer = require("nodemailer"); // Import nodemailer for email sending
+const HospitalInfo = require("../models/HospitalInfo"); 
+const User = require("../models/User");
+const nodemailer = require("nodemailer");
 
 const router = express.Router();
 
@@ -140,7 +140,7 @@ exports.sendSOSAlert = [
           .json({ message: "Hospital information not found" });
       }
 
-      // Sending the SOS alert email to the hospital
+      
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
