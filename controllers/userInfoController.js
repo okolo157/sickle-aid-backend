@@ -105,6 +105,7 @@ exports.updatedUser = [
       res.status(200).json({
         message: "Profile updated successfully",
         profile: user,
+        username: user.username,
       });
     } catch (error) {
       console.error("Profile update error:", error);

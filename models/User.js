@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false, // This can be added during the profile update
   },
+  
   phoneNumber: {
     type: String,
     required: false,

@@ -72,7 +72,7 @@ exports.signup = [
 // Sign-in Controller with input validation
 exports.signin = [
   body("email").isEmail().withMessage("Enter a valid email address"),
-  body("password").not().isEmpty().withMessage("Password is required"),
+  body("password").notEmpty().withMessage("Password is required"),
 
   async (req, res) => {
     if (!process.env.JWT_SECRET) {
@@ -88,16 +88,17 @@ exports.signin = [
     const { email, password } = req.body;
 
     try {
-      const user = await User.findOne({ email });
-      if (!user)
+      // Retrieve all user fields, including username
+      const user = await User.findOne({ email }).select("+username");
+
+      if (!user) {
         return res.status(400).json({ message: "Invalid email or password" });
+      }
 
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch)
+      if (!isMatch) {
         return res.status(400).json({ message: "Invalid email or password" });
-
-      //verify JWT_SECRET exists
-      console.log("JWT_SECRET exists:", !!process.env.JWT_SECRET);
+      }
 
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "1h",
